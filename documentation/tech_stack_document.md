@@ -1,90 +1,153 @@
-# Tech Stack Document
+# Tech Stack Document for Company Dashboard System
 
-This document explains the key technologies chosen for the **codeguide-starter** project. It’s written in everyday language so anyone—technical or not—can understand why each tool was picked and how it supports the application.
+This document outlines the technologies chosen to build a dual-application Company Dashboard System. It consists of a read-only Display Portal for viewers and a full-featured Admin Dashboard. The goal is to explain each choice in everyday terms so anyone can understand why and how they work together.
 
 ## 1. Frontend Technologies
-The frontend is everything the user sees and interacts with. For this project, we’ve used:
 
-- **Next.js (App Router)**
-  - A React framework that makes page routing, server-side rendering, and API routes very simple.
-  - Enhances user experience by pre-rendering pages on the server or at build time, leading to faster initial load.
-- **React 18**
-  - The underlying library for building user interfaces with reusable components.
-  - Provides a smooth, interactive experience thanks to its virtual DOM and modern hooks.
+These tools shape everything users see and interact with in their browser.
+
+- **Next.js (App Router & Server Components)**
+  - A React-based framework by Vercel that handles page routing, server-side data fetching, and fast page loads.
+  - Helps deliver pre-built HTML for better performance and search engine friendliness.
+
 - **TypeScript**
-  - A superset of JavaScript that adds types (labels for data).
-  - Helps catch errors early during development and makes the code easier to maintain.
-- **CSS (globals.css & theme.css)**
-  - **globals.css** applies base styles (fonts, colors, resets) across the entire app.
-  - **dashboard/theme.css** defines the look and feel specific to the dashboard area.
-  - This separation keeps styles organized and avoids accidental style conflicts.
+  - A superset of JavaScript that adds simple checks before running code.
+  - Reduces errors by catching mistakes early, making the code more reliable.
 
-By combining these tools, we have a clear structure (Next.js folders for pages and layouts), safer code (TypeScript), and flexible styling with vanilla CSS.
+- **Tailwind CSS v4**
+  - A utility-first styling library that lets developers apply small reusable style classes directly in markup.
+  - Speeds up custom design work and ensures consistent spacing, colors, and layouts.
+
+- **shadcn/ui**
+  - A collection of ready-made UI components like cards, tables, badges, forms, and buttons.
+  - Ensures a polished look straight out of the box while letting developers tweak designs as needed.
+
+- **Turbopack**
+  - The modern bundler behind Next.js that speeds up build and reload times during development.
+
+- **Next.js Server Actions**
+  - A way to run secure data updates (create, update, delete) directly on the server without exposing credentials.
+
+How it improves the experience:
+- Fast initial loading and smooth navigation.
+- Consistent, responsive design across devices.
+- Reusable components speed up new feature development.
+- Fewer bugs thanks to early type checks and server-side safeguards.
 
 ## 2. Backend Technologies
-The backend handles data, user accounts, and the logic behind the scenes. Our choices here are:
 
-- **Next.js API Routes**
-  - Allows us to write server-side code (`route.ts` files) alongside our frontend in the same project.
-  - Runs on Node.js, so we can handle requests like sign-up, sign-in, and data fetching in one place.
-- **Node.js Runtime**
-  - The JavaScript environment on the server that executes our API routes.
-- **bcrypt** (npm package)
-  - A library for hashing passwords securely before storing them.
-  - Ensures that even if someone got access to our data, raw passwords aren’t visible.
-- **(Optional) NextAuth.js or JWT**
-  - While this starter kit shows a custom authentication flow, it can easily integrate services like NextAuth.js for email-based login or JWT (JSON Web Tokens) for stateless sessions.
+These tools power data storage, user authentication, and real-time updates behind the scenes.
 
-These components work together to receive user credentials, verify or store them securely, manage sessions or tokens, and deliver protected data back to the frontend.
+- **Supabase (PostgreSQL Database & Auth)**
+  - A hosted database solution built on PostgreSQL, offering a familiar SQL interface.
+  - Includes a built-in authentication system to sign in users and manage their roles (Admin vs. Viewer).
+
+- **Supabase Realtime**
+  - Push-based updates that notify the Display Portal instantly when data changes.
+  - Ensures all viewers see the latest information without manual refresh.
+
+- **Drizzle ORM**
+  - A lightweight library to interact with PostgreSQL in a type-safe way, matching your database schema to your code.
+  - Minimizes runtime errors by enforcing structure at compile time.
+
+- **Next.js Server Actions & API Routes**
+  - Built-in mechanisms for handling data mutations (adding, editing, deleting records) securely on the server.
+  - They call the Supabase client to modify the database, leveraging server-side trust.
+
+How these fit together:
+- Supabase stores and secures all data.
+- Drizzle lets your code read and write data with confidence.
+- Server Actions act as a safe bridge between the browser and the database.
+- Realtime subscriptions push updates to the Display Portal as soon as changes occur.
 
 ## 3. Infrastructure and Deployment
-Infrastructure covers where and how we host the app, as well as how changes get delivered:
 
-- **Git & GitHub**
-  - Version control system (Git) and remote hosting (GitHub) keep track of all code changes and allow team collaboration.
-- **Vercel (or Netlify)**
-  - A popular hosting service optimized for Next.js, with one-click deployments and global content delivery.
-  - Automatically rebuilds and deploys the site whenever code is pushed to the main branch.
-- **GitHub Actions (CI/CD)**
-  - Automates tasks like linting (ESLint), formatting (Prettier), and running any tests you add.
-  - Ensures that only clean, tested code goes live.
+This section covers where and how the code runs in production and development.
 
-Together, these tools provide a reliable, scalable setup where every code change is tested and deployed quickly, with minimal manual work.
+- **Vercel**
+  - Hosting platform optimized for Next.js projects.
+  - Provides automatic builds, global content delivery (CDN), and instant rollbacks.
+
+- **GitHub & GitHub Actions (CI/CD)**
+  - GitHub stores the code and tracks changes.
+  - GitHub Actions automatically runs tests and deploys to Vercel when code is merged.
+
+- **Docker**
+  - Containerizes the development environment so everyone on the team works with the same setup.
+  - Removes the classic “it works on my machine” problem.
+
+- **Environment Variables**
+  - Secret keys (like Supabase credentials) are stored securely outside of the codebase.
+
+How this supports the project:
+- Reliable, repeatable deployments with minimal manual steps.
+- Fast global performance via Vercel’s CDN.
+- Safe handling of sensitive credentials.
+- Consistent developer experience across machines.
 
 ## 4. Third-Party Integrations
-While this starter kit is minimal by design, it already includes or can easily add:
 
-- **bcrypt**
-  - For secure password hashing (included as an npm dependency).
-- **NextAuth.js** (optional)
-  - A full-featured authentication library supporting email/password, OAuth, and more.
-- **Sentry or LogRocket** (optional)
-  - For real-time error tracking and performance monitoring in production.
+We leverage external services that slot seamlessly into our project:
 
-These integrations help extend the app’s capabilities without building every feature from scratch.
+- **Supabase** (Auth, Database, Realtime)
+  - All-in-one backend solution.
+
+- **supabase-auth-helpers-nextjs** (optional)
+  - Simplifies wiring Supabase Auth into Next.js pages and middleware.
+
+- **SWR or TanStack Query** (for fallback refresh)
+  - Client-side libraries that can auto-refresh data on a set interval (e.g., every 60 seconds) if realtime fails.
+
+- **Playwright or Cypress**
+  - Automated testing tools to simulate user workflows (like an admin editing an item and viewers seeing it update).  
+
+These integrations boost functionality by:
+- Providing battle-tested authentication and data sync.
+- Ensuring data remains fresh even if realtime breaks.
+- Validating core features with automated tests.
 
 ## 5. Security and Performance Considerations
-We’ve baked in several measures to keep users safe and the app running smoothly:
 
-Security:
-- Passwords are never stored in plain text—bcrypt hashes them with a random salt.
-- API routes can implement CSRF protection and input validation to block malicious requests.
-- Session tokens or cookies are marked secure and HttpOnly to prevent theft via JavaScript.
+We’ve baked in measures to keep the system safe and fast:
 
-Performance:
-- Server-side rendering (SSR) and static site generation (SSG) in Next.js deliver pages faster.
-- Code splitting and lazy-loaded components ensure users only download what they need.
-- Global CSS and theme files are small and cached by the browser for quick repeat visits.
+- **Row-Level Security (RLS) in Supabase**
+  - Database policies that ensure only Admins can modify data, and Viewers can only read.
 
-These strategies work together to give users a fast, secure experience every time.
+- **Supabase Auth**
+  - Manages user identity, sign-in, and role-based claims.
+
+- **Next.js Middleware**
+  - Protects Admin routes by checking user roles before granting access.
+
+- **Server Actions for Mutations**
+  - All sensitive database writes happen on the server, never exposing secrets to the browser.
+
+- **TypeScript & Drizzle ORM**
+  - Early error detection and a single source of truth for data shapes.
+
+- **Caching & Revalidation**
+  - `revalidatePath()` calls ensure that after data changes, pages show up-to-date information.
+
+- **Error Handling & Fallbacks**
+  - The UI gracefully shows a friendly message if data can’t load and retries automatically.
+
+- **Turbopack & Code Splitting**
+  - Reduces bundle sizes and speeds up page loads by only sending the code needed for each page.
 
 ## 6. Conclusion and Overall Tech Stack Summary
-In building **codeguide-starter**, we chose technologies that:
 
-- Align with modern web standards (Next.js, React, TypeScript).
-- Provide a clear, file-based project structure for rapid onboarding.
-- Offer built-in support for server-side rendering, API routes, and static assets.
-- Emphasize security through password hashing, session management, and safe defaults.
-- Enable easy scaling and future enhancements via modular code and optional integrations.
+Our Company Dashboard System stands out by combining modern, proven tools:
 
-This stack strikes a balance between simplicity for newcomers and flexibility for experienced teams. It accelerates development of a secure authentication flow and a polished dashboard, while leaving room to plug in databases, test suites, and advanced features as the project grows.
+- **Next.js + Turbopack** for blazing-fast page loads and a smooth developer experience.
+- **Supabase** for an all-in-one backend: database, auth, real-time updates.
+- **TypeScript + Drizzle ORM** for type-safe, reliable data handling.
+- **Tailwind CSS + shadcn/ui** for rapid, consistent UI design.
+- **Vercel + GitHub Actions** for painless, automated deployments.
+
+This stack aligns perfectly with the project goals:
+- **Real-time data** pushes to viewers.
+- **Secure, role-based access** for Admins and Viewers.
+- **Modular component-driven architecture** for maintainability.
+- **Scalable and reliable** deployments on a global CDN.
+
+In short, these technologies work together to deliver a fast, secure, and easy-to-maintain dual-dashboard experience for both administrators and end users.
